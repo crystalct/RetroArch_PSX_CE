@@ -36,6 +36,12 @@
    cbs->action_select_ident = #name;
 #endif
 
+int action_ok_input_desc(const char *path,
+      const char *label, unsigned type, size_t idx, size_t entry_idx);
+
+int action_ok_input_desc_kbd(const char *path,
+      const char *label, unsigned type, size_t idx, size_t entry_idx);
+
 static int action_select_default(const char *path, const char *label, unsigned type,
       size_t idx, size_t entry_idx)
 {
@@ -125,14 +131,16 @@ static int action_select_core_setting(const char *path, const char *label, unsig
 static int action_select_input_desc(const char *path, const char *label, unsigned type,
       size_t idx, size_t entry_idx)
 {
-   return action_right_input_desc(type, label, true);
+   return action_ok_input_desc(path, label, type,
+         idx, entry_idx);
 }
 
 static int action_select_input_desc_kbd(const char *path,
       const char *label, unsigned type,
       size_t idx, size_t entry_idx)
 {
-   return action_right_input_desc_kbd(type, label, true);
+   return action_ok_input_desc_kbd(path, label, type,
+         idx, entry_idx);
 }
 
 #ifdef HAVE_NETWORKING

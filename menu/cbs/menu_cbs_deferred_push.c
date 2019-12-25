@@ -83,6 +83,16 @@ static int deferred_push_remappings_port(menu_displaylist_info_t *info)
    return deferred_push_dlist(info, DISPLAYLIST_OPTIONS_REMAPPINGS_PORT);
 }
 
+static int deferred_push_dropdown_box_list_port_remap_bind(menu_displaylist_info_t *info)
+{
+   return deferred_push_dlist(info, DISPLAYLIST_OPTIONS_REMAPPINGS_PORT_BIND);
+}
+
+static int deferred_push_dropdown_box_list_port_remap_kbd_bind(menu_displaylist_info_t *info)
+{
+   return deferred_push_dlist(info, DISPLAYLIST_OPTIONS_REMAPPINGS_PORT_KBD_BIND);
+}
+
 generic_deferred_push(deferred_push_video_shader_preset_parameters, DISPLAYLIST_SHADER_PARAMETERS_PRESET)
 generic_deferred_push(deferred_push_video_shader_parameters,        DISPLAYLIST_SHADER_PARAMETERS)
 generic_deferred_push(deferred_push_video_shader_preset_save,       DISPLAYLIST_SHADER_PRESET_SAVE)
@@ -680,6 +690,8 @@ static int menu_cbs_init_bind_deferred_push_compare_label(
       {MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_SPECIAL, deferred_push_dropdown_box_list_special},
       {MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_RESOLUTION, deferred_push_dropdown_box_list_resolution},
       {MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_VIDEO_SHADER_NUM_PASSES, deferred_push_dropdown_box_list_video_shader_num_passes},
+      {MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_PORT_REMAP_BIND, deferred_push_dropdown_box_list_port_remap_bind},
+      {MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_PORT_REMAP_KBD_BIND, deferred_push_dropdown_box_list_port_remap_kbd_bind},
       {MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_VIDEO_SHADER_PARAMETER, deferred_push_dropdown_box_list_shader_parameter},
       {MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_VIDEO_SHADER_PRESET_PARAMETER, deferred_push_dropdown_box_list_shader_preset_parameter},
       {MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_PLAYLIST_DEFAULT_CORE, deferred_push_dropdown_box_list_playlist_default_core},

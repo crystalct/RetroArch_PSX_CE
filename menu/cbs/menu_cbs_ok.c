@@ -445,6 +445,38 @@ int generic_action_ok_displaylist_push(const char *path,
          info.enum_idx      = MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_SPECIAL;
          dl_type            = DISPLAYLIST_GENERIC;
          break;
+      case ACTION_OK_DL_DROPDOWN_BOX_LIST_PORT_REMAP_KBD_BIND:
+         {
+            char val_d[256];
+            snprintf(val_d, sizeof(val_d), "%d", (unsigned)idx);
+            unsigned user_idx = (idx - MENU_SETTINGS_INPUT_DESC_KBD_BEGIN) / RARCH_FIRST_CUSTOM_BIND;
+            unsigned btn_idx  = (idx - MENU_SETTINGS_INPUT_DESC_KBD_BEGIN) - RARCH_FIRST_CUSTOM_BIND * user_idx;
+
+            info.type          = MENU_SETTINGS_INPUT_DESC_KBD_BEGIN + idx;
+            info.directory_ptr = idx;
+            info.path          = strdup(val_d);
+            info_label         = msg_hash_to_str(
+                  MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_PORT_REMAP_KBD_BIND);
+            info.enum_idx      = MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_PORT_REMAP_KBD_BIND;
+            dl_type            = DISPLAYLIST_GENERIC;
+         }
+         break;
+      case ACTION_OK_DL_DROPDOWN_BOX_LIST_PORT_REMAP_BIND:
+         {
+            char val_d[256];
+            snprintf(val_d, sizeof(val_d), "%d", (unsigned)idx);
+            unsigned user_idx = (idx - MENU_SETTINGS_INPUT_DESC_BEGIN) / RARCH_FIRST_CUSTOM_BIND;
+            unsigned btn_idx  = (idx - MENU_SETTINGS_INPUT_DESC_BEGIN) - RARCH_FIRST_CUSTOM_BIND * user_idx;
+
+            info.type          = MENU_SETTINGS_INPUT_DESC_BEGIN + idx;
+            info.directory_ptr = idx;
+            info.path          = strdup(val_d);
+            info_label         = msg_hash_to_str(
+                  MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_PORT_REMAP_BIND);
+            info.enum_idx      = MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_PORT_REMAP_BIND;
+            dl_type            = DISPLAYLIST_GENERIC;
+         }
+         break;
       case ACTION_OK_DL_DROPDOWN_BOX_LIST_SHADER_PARAMETER:
          info.type          = MENU_SETTINGS_SHADER_PARAMETER_0 + idx;
          info.directory_ptr = idx;
@@ -5936,6 +5968,20 @@ static int generic_dropdown_box_list(size_t idx, unsigned lbl)
    return 0;
 }
 
+int action_ok_input_desc_kbd(const char *path,
+      const char *label, unsigned type, size_t idx, size_t entry_idx)
+{
+   return generic_dropdown_box_list(type, 
+         ACTION_OK_DL_DROPDOWN_BOX_LIST_PORT_REMAP_KBD_BIND);
+}
+
+int action_ok_input_desc(const char *path,
+      const char *label, unsigned type, size_t idx, size_t entry_idx)
+{
+   return generic_dropdown_box_list(type, 
+         ACTION_OK_DL_DROPDOWN_BOX_LIST_PORT_REMAP_BIND);
+}
+
 static int action_ok_video_resolution(const char *path,
       const char *label, unsigned type, size_t idx, size_t entry_idx)
 {
@@ -6215,6 +6261,32 @@ static int action_ok_pl_content_thumbnails(const char *path,
 #else
    return -1;
 #endif
+}
+
+static int action_ok_kbd_bind_entry(const char *path,
+      const char *label, unsigned type, size_t idx, size_t entry_idx)
+{
+   settings_t *settings       = config_get_ptr();
+   unsigned _idx = atoi(label);
+   unsigned user_idx = (_idx - MENU_SETTINGS_INPUT_DESC_KBD_BEGIN) / (RARCH_FIRST_CUSTOM_BIND + 8);
+   unsigned btn_idx  = (_idx - MENU_SETTINGS_INPUT_DESC_KBD_BEGIN) - (RARCH_FIRST_CUSTOM_BIND + 8) * user_idx;
+
+   settings->uints.input_remap_ids[user_idx][btn_idx] = type;
+
+   return action_cancel_pop_default(NULL, NULL, 0, 0);
+}
+
+static int action_ok_bind_entry(const char *path,
+      const char *label, unsigned type, size_t idx, size_t entry_idx)
+{
+   settings_t *settings       = config_get_ptr();
+   unsigned _idx = atoi(label);
+   unsigned user_idx = (_idx - MENU_SETTINGS_INPUT_DESC_BEGIN) / (RARCH_FIRST_CUSTOM_BIND + 8);
+   unsigned btn_idx  = (_idx - MENU_SETTINGS_INPUT_DESC_BEGIN) - (RARCH_FIRST_CUSTOM_BIND + 8) * user_idx;
+
+   settings->uints.input_remap_ids[user_idx][btn_idx] = type;
+
+   return action_cancel_pop_default(NULL, NULL, 0, 0);
 }
 
 #ifdef HAVE_NETWORKING
@@ -6586,6 +6658,12 @@ static int menu_cbs_init_bind_ok_compare_label(menu_file_list_cbs_t *cbs,
             break;
          case MENU_ENUM_LABEL_PL_THUMBNAILS_UPDATER_LIST:
             BIND_ACTION_OK(cbs, action_ok_pl_thumbnails_updater_list);
+            break;
+         case MENU_ENUM_LABEL_KBD_BIND_ENTRY:
+            BIND_ACTION_OK(cbs, action_ok_kbd_bind_entry);
+            break;
+         case MENU_ENUM_LABEL_BIND_ENTRY:
+            BIND_ACTION_OK(cbs, action_ok_bind_entry);
             break;
          case MENU_ENUM_LABEL_DOWNLOAD_PL_ENTRY_THUMBNAILS:
             BIND_ACTION_OK(cbs, action_ok_pl_entry_content_thumbnails);
@@ -7226,6 +7304,18 @@ static int menu_cbs_init_bind_ok_compare_type(menu_file_list_cbs_t *cbs,
          type == MENU_SETTINGS_CUSTOM_BIND)
    {
       BIND_ACTION_OK(cbs, action_ok_lookup_setting);
+   }
+   else if (type >= MENU_SETTINGS_INPUT_DESC_BEGIN
+      && type <= MENU_SETTINGS_INPUT_DESC_END)
+   {
+      BIND_ACTION_OK(cbs, action_ok_input_desc);
+      return 0;
+   }
+   else if (type >= MENU_SETTINGS_INPUT_DESC_KBD_BEGIN
+      && type <= MENU_SETTINGS_INPUT_DESC_KBD_END)
+   {
+      BIND_ACTION_OK(cbs, action_ok_input_desc_kbd);
+      return 0;
    }
 #ifdef HAVE_AUDIOMIXER
    else if (type >= MENU_SETTINGS_AUDIO_MIXER_STREAM_ACTIONS_PLAY_BEGIN

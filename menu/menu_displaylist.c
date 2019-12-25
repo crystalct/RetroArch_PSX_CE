@@ -101,6 +101,8 @@
 #include "../runtime_file.h"
 #include "../manual_content_scan.h"
 
+extern struct key_desc key_descriptors[RARCH_MAX_KEYS];
+
 static char new_path_entry[4096]        = {0};
 static char new_lbl_entry[4096]         = {0};
 static char new_entry[4096]             = {0};
@@ -7000,6 +7002,72 @@ bool menu_displaylist_ctl(enum menu_displaylist_ctl_state type,
 
    switch (type)
    {
+      case DISPLAYLIST_OPTIONS_REMAPPINGS_PORT_KBD_BIND:
+         menu_entries_ctl(MENU_ENTRIES_CTL_CLEAR, info->list);
+
+         {
+            unsigned count;
+            rarch_system_info_t *system = runloop_get_system_info();
+
+            settings_t *settings = config_get_ptr();
+            unsigned idx         = atoi(info->path);
+            unsigned user_idx    = (idx - MENU_SETTINGS_INPUT_DESC_KBD_BEGIN) / (RARCH_FIRST_CUSTOM_BIND + 8);
+            unsigned btn_idx     = (idx - MENU_SETTINGS_INPUT_DESC_KBD_BEGIN) - (RARCH_FIRST_CUSTOM_BIND + 8) * user_idx;
+            unsigned remap_idx   = settings->uints.input_remap_ids[user_idx][btn_idx];
+
+            for (i = 0; i < RARCH_FIRST_CUSTOM_BIND; i++)
+            {
+               char val_s[256];
+               const char *desc = system->input_desc_btn[user_idx][i];
+
+               snprintf(val_s, sizeof(val_s), "%d", idx);
+
+               if (!string_is_empty(desc))
+                  if (menu_entries_append_enum(info->list,
+                           desc,
+                           val_s,
+                           MENU_ENUM_LABEL_KBD_BIND_ENTRY,
+                           i, 0, 0))
+                     count++;
+            }
+         }
+
+         info->need_push    = true;
+         info->need_refresh = true;
+         info->need_clear   = true;
+         break;
+      case DISPLAYLIST_OPTIONS_REMAPPINGS_PORT_BIND:
+         menu_entries_ctl(MENU_ENTRIES_CTL_CLEAR, info->list);
+
+         {
+            rarch_system_info_t *system = runloop_get_system_info();
+            settings_t *settings = config_get_ptr();
+            unsigned idx         = atoi(info->path);
+            unsigned user_idx    = (idx - MENU_SETTINGS_INPUT_DESC_BEGIN) / RARCH_FIRST_CUSTOM_BIND;
+            unsigned btn_idx     = (idx - MENU_SETTINGS_INPUT_DESC_BEGIN) - RARCH_FIRST_CUSTOM_BIND * user_idx;
+            unsigned remap_idx   = settings->uints.input_remap_ids[user_idx][btn_idx];
+
+            for (i = 0; i < RARCH_FIRST_CUSTOM_BIND; i++)
+            {
+               char val_s[256];
+               const char *desc = system->input_desc_btn[user_idx][i];
+
+               snprintf(val_s, sizeof(val_s), "%d", idx);
+
+               if (!string_is_empty(desc))
+                  if (menu_entries_append_enum(info->list,
+                           desc,
+                           val_s,
+                           MENU_ENUM_LABEL_BIND_ENTRY,
+                           i, 0, 0))
+                     count++;
+            }
+         }
+
+         info->need_push    = true;
+         info->need_refresh = true;
+         info->need_clear   = true;
+         break;
       case DISPLAYLIST_OPTIONS_REMAPPINGS_PORT:
          menu_entries_ctl(MENU_ENTRIES_CTL_CLEAR, info->list);
 
