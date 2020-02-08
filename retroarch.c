@@ -18755,7 +18755,7 @@ static bool audio_driver_find_driver(void)
 static bool audio_driver_init_internal(bool audio_cb_inited)
 {
    unsigned new_rate     = 0;
-   float   *aud_inp_data = NULL;
+   int16_t  *aud_inp_data = NULL;
    void  *samples_buf    = NULL;
    int16_t *rewind_buf   = NULL;
    size_t max_bufsamples = AUDIO_CHUNK_SIZE_NONBLOCKING * 2;
@@ -18874,26 +18874,26 @@ static bool audio_driver_init_internal(bool audio_cb_inited)
       audio_driver_active = false;
    }
 
-   aud_inp_data = (float*)malloc(max_bufsamples * sizeof(float));
+   aud_inp_data = (int16_t*)malloc(max_bufsamples * sizeof(int16_t));
    retro_assert(aud_inp_data != NULL);
 
    if (!aud_inp_data)
       goto error;
 
-   audio_driver_input_data = (float*)aud_inp_data;
+   audio_driver_input_data = (int16_t*)aud_inp_data;
    audio_driver_data_ptr   = 0;
 
    retro_assert(settings->uints.audio_out_rate <
          audio_driver_input * AUDIO_MAX_RATIO);
 
-   samples_buf = (float*)malloc(outsamples_max * sizeof(float));
+   samples_buf = (int16_t*)malloc(outsamples_max * sizeof(int16_t));
 
    retro_assert(samples_buf != NULL);
 
    if (!samples_buf)
       goto error;
 
-   audio_driver_output_samples_buf = (float*)samples_buf;
+   audio_driver_output_samples_buf = (int16_t*)samples_buf;
    audio_driver_control            = false;
 
    if (
@@ -18953,12 +18953,15 @@ static void audio_driver_flush(const int16_t *data, size_t samples,
    src_data.data_out                 = NULL;
    src_data.output_frames            = 0;
 
+#if 0
    convert_s16_to_float((float*)audio_driver_input_data, data, samples,
          audio_volume_gain);
+#endif
 
-   src_data.data_in                  = (float*)audio_driver_input_data;
+   src_data.data_in                  = (int16_t*)data;
    src_data.input_frames             = samples >> 1;
 
+#if 0
    /* TODO/FIXME - not available in fixed integer mode */
    if (audio_driver_dsp)
    {
@@ -18980,8 +18983,9 @@ static void audio_driver_flush(const int16_t *data, size_t samples,
          src_data.input_frames       = dsp_data.output_frames;
       }
    }
+#endif
 
-   src_data.data_out                 = (float*)audio_driver_output_samples_buf;
+   src_data.data_out                 = (int16_t*)audio_driver_output_samples_buf;
 
    if (audio_driver_control)
    {
@@ -19019,6 +19023,7 @@ static void audio_driver_flush(const int16_t *data, size_t samples,
 
    audio_driver_resampler->process(audio_driver_resampler_data, &src_data);
 
+#if 0
 #ifdef HAVE_AUDIOMIXER
    /* TODO/FIXME - provide an int16_t codepath for audio_mixer_mix too 
     * so we don't have to skip this here */
@@ -19032,19 +19037,24 @@ static void audio_driver_flush(const int16_t *data, size_t samples,
             src_data.output_frames, mixer_gain, override);
    }
 #endif
+#endif
 
    {
       const void *output_data = audio_driver_output_samples_buf;
       unsigned output_frames  = (unsigned)src_data.output_frames;
 
+#if 0
       if (audio_driver_use_float)
          output_frames  *= sizeof(float);
       else
+#endif
       {
+#if 0
          convert_float_to_s16(audio_driver_output_samples_conv_buf,
                (const float*)output_data, output_frames * 2);
+#endif
 
-         output_data     = audio_driver_output_samples_conv_buf;
+         output_data     = output_data;
          output_frames  *= sizeof(int16_t);
       }
 
