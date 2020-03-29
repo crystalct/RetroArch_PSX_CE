@@ -815,7 +815,7 @@ static int16_t qnx_input_state(void *data,
                }
             }
 
-            return ret;
+            return ret|get_gamepad_input_override();
          }
          else
             if (qnx_is_pressed(qnx, joypad_info, port, binds[port], id))

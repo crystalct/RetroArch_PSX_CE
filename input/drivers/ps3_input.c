@@ -29,6 +29,7 @@
 #include "../../defines/ps3_defines.h"
 
 #include "../input_driver.h"
+#include "../../retroarch.h"
 
 #ifdef HAVE_MOUSE
 #ifndef __PSL1GHT__
@@ -136,7 +137,7 @@ static int16_t ps3_input_state(void *data,
                }
             }
 
-            return ret;
+            return ret|get_gamepad_input_override();
          }
          else
          {
