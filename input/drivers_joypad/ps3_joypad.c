@@ -55,7 +55,7 @@ static void ps3_joypad_autodetect_add(unsigned autoconf_pad)
 
 static void *ps3_joypad_init(void *data)
 {
-   ioPadInit(DEFAULT_MAX_PADS);
+   cellPadInit(DEFAULT_MAX_PADS);
 
    return (void*)-1;
 }
@@ -159,13 +159,13 @@ static int16_t ps3_joypad_state(
 static void ps3_joypad_poll(void)
 {
    unsigned port;
-   padInfo2 pad_info;
+   CellPadInfo2 pad_info;
 
-   ioPadGetInfo2(&pad_info);
+   cellPadGetInfo2(&pad_info);
 
    for (port = 0; port < DEFAULT_MAX_PADS; port++)
    {
-      padData state_tmp;
+      CellPadData state_tmp;
 
       if (pad_info.port_status[port] & CELL_PAD_STATUS_ASSIGN_CHANGES)
       {
@@ -184,7 +184,7 @@ static void ps3_joypad_poll(void)
       if (pads_connected[port] == 0)
          continue;
 
-      ioPadGetData(port, &state_tmp);
+      cellPadGetData(port, &state_tmp);
 
       if (state_tmp.len != 0)
       {
@@ -276,7 +276,7 @@ static bool ps3_joypad_rumble(unsigned pad,
 
 static void ps3_joypad_destroy(void)
 {
-   ioPadEnd();
+   cellPadEnd();
 }
 
 input_device_driver_t ps3_joypad = {
