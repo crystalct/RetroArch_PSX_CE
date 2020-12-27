@@ -25,7 +25,9 @@
 
 #include <stdint.h>
 
-#if defined(XENON)
+#if defined(__CELLOS_LV2__) && !defined(__PSL1GHT__)
+#include <sys/timer.h>
+#elif defined(XENON)
 #include <time/time.h>
 #elif defined(GEKKO) || defined(__PSL1GHT__) || defined(__QNX__)
 #include <unistd.h>
@@ -81,7 +83,9 @@ static int nanosleepDOS(const struct timespec *rqtp, struct timespec *rmtp)
  *
  * Sleeps for a specified amount of milliseconds (@msec).
  **/
-#if defined(PSP) || defined(VITA)
+#if defined(__CELLOS_LV2__) && !defined(__PSL1GHT__)
+#define retro_sleep(msec) (sys_timer_usleep(1000 * (msec)))
+#elif defined(PSP) || defined(VITA)
 #define retro_sleep(msec) (sceKernelDelayThread(1000 * (msec)))
 #elif defined(_3DS)
 #define retro_sleep(msec) (svcSleepThread(1000000 * (s64)(msec)))

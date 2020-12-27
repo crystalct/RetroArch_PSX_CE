@@ -43,7 +43,11 @@
 #include <lv2/systime.h>
 #endif
 
-#if defined(_XBOX360)
+#if defined(__CELLOS_LV2__)
+#ifndef _PPU_INTRINSICS_H
+#include <ppu_intrinsics.h>
+#endif
+#elif defined(_XBOX360)
 #include <PPCIntrinsics.h>
 #elif defined(_POSIX_MONOTONIC_CLOCK) || defined(ANDROID) || defined(__QNX__) || defined(DJGPP)
 /* POSIX_MONOTONIC_CLOCK is not being defined in Android headers despite support being present. */
@@ -71,6 +75,8 @@
 
 #if defined(__PSL1GHT__)
 #include <sys/time.h>
+#elif defined(__CELLOS_LV2__)
+#include <sys/sys_time.h>
 #endif
 
 #ifdef GEKKO
@@ -177,7 +183,7 @@ retro_perf_tick_t cpu_features_get_perf_counter(void)
    time_ticks = (retro_perf_tick_t)a | ((retro_perf_tick_t)d << 32);
 #elif defined(__ARM_ARCH_6__)
    __asm__ volatile( "mrc p15, 0, %0, c9, c13, 0" : "=r"(time_ticks) );
-#elif defined(_XBOX360) || defined(__powerpc__) || defined(__ppc__) || defined(__POWERPC__) || defined(__PSL1GHT__)
+#elif defined(__CELLOS_LV2__) || defined(_XBOX360) || defined(__powerpc__) || defined(__ppc__) || defined(__POWERPC__) || defined(__PSL1GHT__)
    time_ticks = __mftb();
 #elif defined(GEKKO)
    time_ticks = gettime();
@@ -220,6 +226,8 @@ retro_time_t cpu_features_get_time_usec(void)
    return (count.QuadPart / freq.QuadPart * 1000000) + (count.QuadPart % freq.QuadPart * 1000000 / freq.QuadPart);
 #elif defined(__PSL1GHT__)
    return sysGetSystemTime();
+#elif defined(__CELLOS_LV2__)
+   return sys_time_get_system_time();
 #elif defined(GEKKO)
    return ticks_to_microsecs(gettime());
 #elif defined(WIIU)
@@ -484,7 +492,7 @@ unsigned cpu_features_get_core_amount(void)
    return sysinfo.dwNumberOfProcessors;
 #elif defined(GEKKO)
    return 1;
-#elif defined(PSP) || defined(PS2)
+#elif defined(PSP) || defined(PS2) || defined(__CELLOS_LV2__)
    return 1;
 #elif defined(VITA)
    return 4;

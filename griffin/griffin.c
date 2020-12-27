@@ -262,7 +262,9 @@ VIDEO CONTEXT
 
 #endif
 
-#if defined(ANDROID)
+#if defined(__CELLOS_LV2__) && !defined(__PSL1GHT__)
+#include "../gfx/drivers_context/ps3_ctx.c"
+#elif defined(ANDROID)
 #include "../gfx/drivers_context/android_ctx.c"
 #if defined(HAVE_VULKAN)
 #include "../gfx/drivers_context/android_vk_ctx.c"
@@ -681,8 +683,13 @@ INPUT
 
 #include "../input/input_autodetect_builtin.c"
 
-#if defined(__PSL1GHT__)
+#if defined(__CELLOS_LV2__)
+#ifdef __PSL1GHT__
 #include "../input/drivers/psl1ght_input.c"
+#else
+#include "../input/drivers/ps3_input.c"
+#include "../input/drivers_joypad/ps3_joypad.c"
+#endif
 #elif defined(SN_TARGET_PSP2) || defined(PSP) || defined(VITA)
 #include "../input/drivers/psp_input.c"
 #include "../input/drivers_joypad/psp_joypad.c"
@@ -896,7 +903,7 @@ RSOUND
 /*============================================================
 AUDIO
 ============================================================ */
-#if defined(__PSL1GHT__)
+#if defined(__CELLOS_LV2__)
 #include "../audio/drivers/ps3_audio.c"
 #elif defined(XENON)
 #include "../audio/drivers/xenon360_audio.c"
@@ -1137,7 +1144,7 @@ FRONTEND
 #include "../frontend/drivers/platform_xdk.c"
 #endif
 
-#if defined(__PSL1GHT__)
+#if defined(__CELLOS_LV2__)
 #include "../frontend/drivers/platform_ps3.c"
 #elif defined(GEKKO)
 #include "../frontend/drivers/platform_gx.c"
