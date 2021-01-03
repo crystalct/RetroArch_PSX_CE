@@ -13903,7 +13903,16 @@ bool command_event(enum event_command cmd, void *data)
 #endif
          break;
       case CMD_EVENT_MENU_RESET_TO_DEFAULT_CONFIG:
+#ifdef __CELLOS_LV2__
+         cellFsUnlink(path_get(RARCH_PATH_CONFIG));
+         if (!frontend_driver_set_fork(FRONTEND_FORK_RESTART))
+            return false;
+#ifndef HAVE_DYNAMIC
+         command_event(CMD_EVENT_QUIT, NULL);
+#endif
+#else
          config_set_defaults(&p_rarch->g_extern);
+#endif
          break;
       case CMD_EVENT_MENU_SAVE_CURRENT_CONFIG:
 #if !defined(HAVE_DYNAMIC)
