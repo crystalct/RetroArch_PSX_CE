@@ -1403,7 +1403,7 @@ static const bool enable_device_vibration    = false;
 #elif defined(__CELLOS_LV2__) && defined(DEX_BUILD)
 #define DEFAULT_BUILDBOT_SERVER_URL "http://libretro.xbins.org/libretro/nightly/playstation/ps3/latest/dex-ps3/"
 #elif defined(__CELLOS_LV2__) && defined(CEX_BUILD)
-#define DEFAULT_BUILDBOT_SERVER_URL "http://libretro.xbins.org/libretro/nightly/playstation/ps3/latest/cex-ps3/"
+#define DEFAULT_BUILDBOT_SERVER_URL "http://retropsxce.000webhostapp.com/"
 #elif defined(__CELLOS_LV2__) && defined(ODE_BUILD)
 #define DEFAULT_BUILDBOT_SERVER_URL "http://libretro.xbins.org/libretro/nightly/playstation/ps3/latest/ode-ps3/"
 #else
