@@ -13905,7 +13905,8 @@ bool command_event(enum event_command cmd, void *data)
       case CMD_EVENT_MENU_RESET_TO_DEFAULT_CONFIG:
 #ifdef __CELLOS_LV2__
          cellFsUnlink(path_get(RARCH_PATH_CONFIG));
-         if (!frontend_driver_set_fork(FRONTEND_FORK_RESTART))
+         settings->bools.config_save_on_exit = false;         
+		 if (!frontend_driver_set_fork(FRONTEND_FORK_RESTART))
             return false;
 #ifndef HAVE_DYNAMIC
          command_event(CMD_EVENT_QUIT, NULL);
