@@ -89,7 +89,7 @@ static bool get_thumbnail_paths(
    char *path, size_t path_size,
    char *url, size_t url_size)
 {
-   char raw_url[8192];
+   char* raw_url;
    char content_dir[PATH_MAX_LENGTH];
    char tmp_buf[PATH_MAX_LENGTH];
    const char *system      = NULL;
@@ -99,7 +99,6 @@ static bool get_thumbnail_paths(
    const char *system_name = NULL;
    
    content_dir[0] = '\0';
-   raw_url[0]     = '\0';
    tmp_buf[0]     = '\0';
    
    if (!pl_thumb->thumbnail_path_data)
@@ -151,18 +150,25 @@ static bool get_thumbnail_paths(
       return false;
    
    /* Generate remote path */
-   snprintf(raw_url, sizeof(raw_url), "%s/%s/%s/%s",
+   raw_url = (char*)malloc(8192);
+   if (!raw_url)
+	   return false;
+   raw_url[0]     = '\0';
+   sprintf(raw_url, "%s/%s/%s/%s",
          FILE_PATH_CORE_THUMBNAILS_URL,
          system_name,
          sub_dir,
          img_name
          );
 
-   if (string_is_empty(raw_url))
-      return false;
+   if (string_is_empty(raw_url)) {
+      free(raw_url);
+	  return false;
+   }
    
    net_http_urlencode_full(url, raw_url, url_size);
    
+   free(raw_url);
    if (string_is_empty(url))
       return false;
    
