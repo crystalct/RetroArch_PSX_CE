@@ -1,0 +1,3 @@
+[submodule "RetroArch_Orig"]
+	path = RetroArch_Orig
+	url = https://github.com/libretro/RetroArch
