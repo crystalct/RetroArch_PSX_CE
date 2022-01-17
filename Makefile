@@ -13,7 +13,3 @@ clean:
 test:
 	@cd RetroArch_Orig;
 	@./RetroArchPatch.sh
-	
-	
-	
-	git submodule init; git submodule update; cp -rf Makefile.ps3 ./RetroArch_Orig;
